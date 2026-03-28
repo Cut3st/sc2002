@@ -1,3 +1,5 @@
+package combatants;
+import combat.BattleInfo;
 public abstract  class Enemy extends Combatant{
     protected EnemyAction action;
 

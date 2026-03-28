@@ -1,3 +1,5 @@
+package combatants;
+import combat.BattleInfo;
 public class BasicEnemyAttack implements EnemyAction{
     public void execute(Enemy enemy, BattleInfo context){
         Combatant player=context.getPlayer();//name may change depends on what its named

@@ -1,10 +1,13 @@
-
+package combatants;
+import combat.BattleInfo;
 public abstract class Combatant{
     protected int hp;
     protected  int attack;
     protected int defense;
     protected int speed;
-
+    protected String name;
+    protected int maxHp;
+    
     public abstract void TakeTurn(BattleInfo context);//info about previous move for e.g. who's fighting,current stats,whose turn etc...
 
     public void receiveDamage(int damage){
@@ -26,6 +29,9 @@ public abstract class Combatant{
     public int getSpeed() {
         return speed;
     }
+    public String getName() { return name; }
+    public int getHp() { return hp; }
+    public int getMaxHp(){ return maxHp; }
 
 }
 

@@ -1,3 +1,5 @@
+package combatants;
+import combat.BattleInfo;
 public abstract class Player extends Combatant{
     protected SpecialSkill skill;
 

@@ -5,7 +5,7 @@ public class ArcaneBuff extends StatusEffect {
     private static final int BONUS_PER_KILL = 10;
 
     public ArcaneBuff() {
-        super("ARCANE_BUFF", -1); // Permanent duration
+        super("ARCANE_BUFF", -1); // permanent duration
     }
 
     public static void apply(Combatant user, int kills) {

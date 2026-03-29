@@ -1,7 +1,7 @@
 package actions;
 import combat.BattleInfo;
-import combatants.Combatant;
-import combatants.Player;
+import combatants.Combatant;//import combatants
+import combatants.Player;//import battle information+combatants is an object
 
 public class SpecialSkillAction implements Action {
 

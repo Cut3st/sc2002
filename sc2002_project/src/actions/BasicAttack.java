@@ -1,6 +1,6 @@
 package actions;
-import combat.BattleInfo;
-import combatants.Combatant;
+import combat.BattleInfo;// import combatants
+import combatants.Combatant;//import battle information+combatants is an object
 
 public class BasicAttack implements Action {
 // must realize function execute() and getname()

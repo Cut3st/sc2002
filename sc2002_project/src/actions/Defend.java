@@ -1,6 +1,6 @@
 package actions;
-import combat.BattleInfo;
-import combatants.Combatant;//combatants is an object
+import combat.BattleInfo;//import combatants
+import combatants.Combatant;//import battle information+combatants is an object
 
 public class Defend implements Action {
 

@@ -1,6 +1,8 @@
 package combat;
+
 import actions.Action;
 import combatants.*;
+import ui.CLI;
 import java.util.*;
 
 public class BattleInfo {
@@ -8,12 +10,14 @@ public class BattleInfo {
     private List<Combatant> enemies;
     private int currentRound;
     private Map<Combatant, Map<String, Integer>> statusEffects;
+    private CLI cli; // injected so CLI handles all I/O
 
-    public BattleInfo(Combatant player, List<Combatant> enemies, int currentRound) {
+    public BattleInfo(Combatant player, List<Combatant> enemies, int currentRound, CLI cli) {
         this.player = player;
         this.enemies = enemies;
         this.currentRound = currentRound;
         this.statusEffects = new HashMap<>();
+        this.cli = cli;
     }
 
     // BasicEnemyAttack uses this
@@ -28,34 +32,33 @@ public class BattleInfo {
             && statusEffects.get(c).getOrDefault("STUNNED", 0) > 0;
     }
 
-    // ShieldBash uses this
+    // ShieldBash + Defend uses this
     public void applyStatusEffect(Combatant target, String effect, int duration) {
         statusEffects.computeIfAbsent(target, k -> new HashMap<>()).put(effect, duration);
-        System.out.println(target.getName() + " is " + effect + " for " + duration + " turns!");
+        System.out.println("  " + target.getName() + " is " + effect + " for " + duration + " turns!");
     }
 
-    // ShieldBash uses this — CLI member will flesh this out
+    /**
+     * Fleshed out — delegates to CLI for display and input.
+     * Called by BasicAttack and ShieldBash.
+     */
     public Combatant selectTarget(Combatant user) {
         List<Combatant> alive = new ArrayList<>();
         for (Combatant e : enemies) {
             if (e.isAlive()) alive.add(e);
         }
-        System.out.println("Select a target:");
-        for (int i = 0; i < alive.size(); i++) {
-            System.out.println((i + 1) + ". " + alive.get(i).getName()
-                + " HP: " + alive.get(i).getHp());
-        }
-        Scanner scanner = new Scanner(System.in);
-        int choice = scanner.nextInt() - 1;
-        return alive.get(choice);
+        return cli.selectTarget(alive);
     }
 
-    // Player.java uses this — CLI member will flesh this out
+    /**
+     * Fleshed out — delegates to CLI for action menu display and input.
+     * Called by Player.TakeTurn().
+     */
     public Action getPlayerAction(Player player) {
-        return null; // placeholder for CLI member
+        return cli.getPlayerAction(player);
     }
 
-    // call this at end of every turn in BattleEngine
+    // Called at end of every turn in BattleEngine
     public void tickEffects() {
         for (Map<String, Integer> effects : statusEffects.values()) {
             effects.replaceAll((effect, turns) -> turns - 1);
@@ -64,4 +67,10 @@ public class BattleInfo {
     }
 
     public int getCurrentRound() { return currentRound; }
+
+    // Returns summary of active effects on a combatant (for display)
+    public String getStatusSummary(Combatant c) {
+        if (!statusEffects.containsKey(c) || statusEffects.get(c).isEmpty()) return "";
+        return statusEffects.get(c).toString();
+    }
 }

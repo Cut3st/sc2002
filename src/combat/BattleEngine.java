@@ -40,7 +40,7 @@ public class BattleEngine {
                 player,
                 enemies.stream().filter(Combatant::isAlive).collect(Collectors.toList()),
                 roundCount,
-                cli
+                cli,
                 statusEffects
             );
 

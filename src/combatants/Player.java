@@ -1,6 +1,12 @@
 package combatants;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import actions.Action;
 import combat.BattleInfo;
+import items.Item;
+import ui.CLI;
 public abstract class Player extends Combatant{
     protected SpecialSkill skill;
 
@@ -14,7 +20,25 @@ public abstract class Player extends Combatant{
         skill.tickCooldown();
     }
     public SpecialSkill getSkill() { return skill; }
-    public boolean hasItems() { return false; }
-    public String getItemsSummary() { return "No items (coming soon)"; }
+    // Add these fields and methods to Player.java
+    protected List<Item> items = new ArrayList<>();
+
+    public void addItem(Item item) { items.add(item); }
+
+    public boolean hasItems() {
+        return items.stream().anyMatch(i -> !i.isUsed());
+    }
+
+    public String getItemsSummary() {
+        if (items.isEmpty()) return "None";
+        return items.stream()
+            .map(i -> i.getName() + (i.isUsed() ? " (used)" : ""))
+            .collect(java.util.stream.Collectors.joining(", "));
+    }
+
+    // M4 will call this from the Item action
+    public Item selectItem(CLI cli) {
+        return cli.selectItem(items.stream().filter(i -> !i.isUsed()).collect(Collectors.toList()));
+}
 }
 

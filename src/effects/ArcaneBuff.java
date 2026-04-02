@@ -1,20 +1,23 @@
 package effects;
 
+import combatants.Combatant;
+
 public class ArcaneBuff extends StatusEffect {
+    private final int attackBonus;
 
-    private static final int BONUS_PER_KILL = 10;
-
-    public ArcaneBuff() {
-        super("ARCANE_BUFF", -1); // Permanent duration
+    public ArcaneBuff(int kills) {
+        super("ARCANE_BUFF", -1); // -1 = permanent until end of level
+        this.attackBonus = kills * 10;
     }
 
-    public static void apply(Combatant user, int kills) {
-        if (kills <= 0) return;
+    @Override
+    public void onApply(Combatant target) {
+        target.increaseAttack(attackBonus);
+        System.out.println(target.getName() + " gains +" + attackBonus + " ATK from Arcane Buff!");
+    }
 
-        int bonus = kills * BONUS_PER_KILL;
-        user.increaseAttack(bonus);
-
-        System.out.println(user.getName() +
-                " gains +" + bonus + " attack from Arcane Buff.");
+    @Override
+    public void onExpire(Combatant target) {
+        // Permanent — never expires mid-level, so nothing here
     }
 }

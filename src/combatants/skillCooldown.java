@@ -10,7 +10,10 @@ public abstract class skillCooldown implements SpecialSkill{
     protected void triggerCooldown(){
         cooldown=MAX_COOLDOWN;
     }
-
+    public void tickCooldown() {
+        if (cooldown == MAX_COOLDOWN) return; // just used this turn, don't decrement yet
+        if (cooldown > 0) cooldown--;
+    }
     public void reduceCooldown(){
         if(cooldown>0)
             cooldown--;

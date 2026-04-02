@@ -1,16 +1,19 @@
 package combatants;
 import combat.BattleInfo;
+import effects.Stun;
 public class ShieldBash extends skillCooldown{ //warrior skill
-    public void execute(Combatant user,BattleInfo context){
-        if(!isAvailable()) //check if command use is available
+    public void execute(Combatant user, BattleInfo context) {
+        if (!isAvailable()) {
+            System.out.println("Shield Bash is on cooldown!");
             return;
-        Combatant target=context.selectTarget(user); // choose target to attack
-
-        int damage=Math.max(0,user.getAttack()-target.getDefense());//user attack - user defense as (Update HP (Existing HP-Damage+Defense)) or 0 incase def>atk
+        }
+        Combatant target = context.selectTarget(user);
+        int damage = Math.max(0, user.getAttack() - target.getDefense());
+        int oldHp = target.getHp();
         target.receiveDamage(damage);
-
-        context.applyStatusEffect(target, "STUNNED", 2);//name may change depend on what is named.
-
+        System.out.println(user.getName() + " uses Shield Bash on " + target.getName()
+                + " for " + damage + " damage. HP: " + oldHp + " -> " + target.getHp());
+        context.applyStatusEffect(target, new Stun());
         triggerCooldown();
     }
 }

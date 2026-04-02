@@ -47,22 +47,39 @@ public class CLI {
      * Presents the action menu and returns the chosen Action.
      * Called by Player.TakeTurn() via context.getPlayerAction()
      */
+    // public Action getPlayerAction(Player player) {
+    //     showActionMenu(player);
+
+    //     while (true) {
+    //         int choice = getIntInput("  Enter choice (1-4): ", 1, 4);
+    //         switch (choice) {
+    //             case 1 -> { return new BasicAttack(); }
+    //             case 2 -> { return new Defend(); }
+    //             case 3 -> {
+    //                 if (!player.hasItems()) {
+    //                     System.out.println("  [!] No items remaining. Choose another action.");
+    //                 } else {
+    //                     return player.useItemAction(this);
+    //                 }
+    //             }
+    //             case 4 -> {
+    //                 if (!player.getSkill().isAvailable()) {
+    //                     System.out.println("  [!] Special Skill is on cooldown. Choose another action.");
+    //                 } else {
+    //                     return new SpecialSkillAction();
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
     public Action getPlayerAction(Player player) {
         showActionMenu(player);
-
         while (true) {
-            int choice = getIntInput("  Enter choice (1-4): ", 1, 4);
+            int choice = getIntInput("  Enter choice (1-3): ", 1, 3);
             switch (choice) {
                 case 1 -> { return new BasicAttack(); }
                 case 2 -> { return new Defend(); }
                 case 3 -> {
-                    if (!player.hasItems()) {
-                        System.out.println("  [!] No items remaining. Choose another action.");
-                    } else {
-                        return player.useItemAction(this);
-                    }
-                }
-                case 4 -> {
                     if (!player.getSkill().isAvailable()) {
                         System.out.println("  [!] Special Skill is on cooldown. Choose another action.");
                     } else {
@@ -72,7 +89,6 @@ public class CLI {
             }
         }
     }
-
     // =========================================================
     // LOADING / SETUP SCREENS
     // =========================================================
@@ -173,28 +189,43 @@ public class CLI {
         printDivider('=', 60);
     }
 
+    // public void showActionMenu(Player player) {
+    //     System.out.println();
+    //     System.out.printf("  %s's Turn — Choose an action:%n", player.getName());
+    //     printDivider('-', 60);
+    //     System.out.println("  [1] Basic Attack   — Attack a selected enemy");
+    //     System.out.println("  [2] Defend         — +10 DEF for this turn and next");
+
+    //     if (player.hasItems()) {
+    //         System.out.printf("  [3] Use Item       — %s%n", player.getItemsSummary());
+    //     } else {
+    //         System.out.println("  [3] Use Item       — (No items remaining)");
+    //     }
+
+    //     if (player.getSkill().isAvailable()) {
+    //         System.out.printf("  [4] Special Skill  — %s (READY)%n",
+    //                 player.getSkill().getClass().getSimpleName());
+    //     } else {
+    //         System.out.printf("  [4] Special Skill  — %s (On Cooldown)%n",
+    //                 player.getSkill().getClass().getSimpleName());
+    //     }
+    //     printDivider('-', 60);
+    // }
     public void showActionMenu(Player player) {
-        System.out.println();
-        System.out.printf("  %s's Turn — Choose an action:%n", player.getName());
-        printDivider('-', 60);
-        System.out.println("  [1] Basic Attack   — Attack a selected enemy");
-        System.out.println("  [2] Defend         — +10 DEF for this turn and next");
-
-        if (player.hasItems()) {
-            System.out.printf("  [3] Use Item       — %s%n", player.getItemsSummary());
-        } else {
-            System.out.println("  [3] Use Item       — (No items remaining)");
-        }
-
-        if (player.getSkill().isAvailable()) {
-            System.out.printf("  [4] Special Skill  — %s (READY)%n",
-                    player.getSkill().getClass().getSimpleName());
-        } else {
-            System.out.printf("  [4] Special Skill  — %s (On Cooldown)%n",
-                    player.getSkill().getClass().getSimpleName());
-        }
-        printDivider('-', 60);
+    System.out.println();
+    System.out.printf("  %s's Turn — Choose an action:%n", player.getName());
+    printDivider('-', 60);
+    System.out.println("  [1] Basic Attack   — Attack a selected enemy");
+    System.out.println("  [2] Defend         — +10 DEF for this turn and next");
+    if (player.getSkill().isAvailable()) {
+        System.out.printf("  [3] Special Skill  — %s (READY)%n",
+                player.getSkill().getClass().getSimpleName());
+    } else {
+        System.out.printf("  [3] Special Skill  — %s (On Cooldown)%n",
+                player.getSkill().getClass().getSimpleName());
     }
+    printDivider('-', 60);
+}
 
     public void showStunnedMessage(Combatant c) {
         System.out.printf("%n  [STUNNED] %s cannot act this turn!%n", c.getName());

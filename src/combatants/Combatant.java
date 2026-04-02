@@ -26,6 +26,7 @@ public abstract class Combatant{
     public int getDefense(){
         return defense;
     }
+    public void setDefense(int defense) { this.defense = defense; }
     public int getSpeed() {
         return speed;
     }

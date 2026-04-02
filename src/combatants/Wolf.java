@@ -1,7 +1,7 @@
 package combatants;
 public class Wolf extends Enemy{
-    public Wolf(){
-        this.name = "Wolf";
+    public Wolf(String name){
+        this.name = name;
         this.hp = 40;
         this.maxHp = 40;
         this.attack=45;
@@ -9,4 +9,8 @@ public class Wolf extends Enemy{
         this.speed=35;
         this.action=new BasicEnemyAttack();
     }
+    public Wolf() {
+        this("Wolf");
+    }
 }
+        

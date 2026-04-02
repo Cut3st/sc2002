@@ -3,6 +3,7 @@ import combatants.Combatant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import ui.CLI;
 
 public class BattleEngine {
     private Combatant player;
@@ -11,53 +12,49 @@ public class BattleEngine {
     private boolean backupSpawned = false;
     private TurnOrderStrategy turnOrderStrategy;
     private int roundCount = 0;
-
-    public BattleEngine(Combatant player, List<Combatant> enemies,
-                        List<Combatant> backupSpawn, TurnOrderStrategy strategy) {
-        this.player = player;
-        this.enemies = new ArrayList<>(enemies);
-        this.backupSpawn = (backupSpawn != null) ? backupSpawn : new ArrayList<>();
-        this.turnOrderStrategy = strategy;
-    }
+private CLI cli;
+public BattleEngine(Combatant player, List<Combatant> enemies, List<Combatant> backupSpawn, TurnOrderStrategy strategy, CLI cli) {
+    this.player = player;
+    this.enemies = new ArrayList<>(enemies);
+    this.backupSpawn = (backupSpawn != null) ? backupSpawn : new ArrayList<>();
+    this.turnOrderStrategy = strategy;
+    this.cli = cli;
+}
 
     public void runBattle() {
         while (!isBattleOver()) {
             roundCount++;
-            System.out.println("\n========== ROUND " + roundCount + " ==========");
+            cli.showBattleStatus(player, enemies, roundCount); // move display to top of round
 
             List<Combatant> allCombatants = getAllCombatants();
             List<Combatant> turnOrder = turnOrderStrategy.getTurnOrder(allCombatants);
 
+            BattleInfo context = new BattleInfo(
+                player,
+                enemies.stream().filter(Combatant::isAlive).collect(Collectors.toList()),
+                roundCount,
+                cli
+            );
+
             for (Combatant c : turnOrder) {
                 if (!c.isAlive()) continue;
                 if (isBattleOver()) break;
-
-                BattleInfo context = new BattleInfo(
-                    player,
-                    enemies.stream().filter(Combatant::isAlive).collect(Collectors.toList()),
-                    roundCount
-                );
-
                 c.TakeTurn(context);
+                context.tickEffectsFor(c); // tick only this combatant's effects after their turn
             }
 
             checkBackupSpawn();
             displayRoundSummary();
         }
-
         displayResult();
     }
-
     private void checkBackupSpawn() {
         if (!backupSpawned && !backupSpawn.isEmpty()) {
             boolean allInitialDead = enemies.stream().noneMatch(Combatant::isAlive);
             if (allInitialDead) {
-                System.out.println("\n⚠ BACKUP SPAWN TRIGGERED!");
                 enemies.addAll(backupSpawn);
                 backupSpawned = true;
-                for (Combatant c : backupSpawn) {
-                    System.out.println(c.getName() + " has entered the battle!");
-                }
+                cli.showBackupSpawn(backupSpawn); // already implemented in CLI
             }
         }
     }
@@ -87,15 +84,11 @@ public class BattleEngine {
 
     private void displayResult() {
         if (player.isAlive()) {
-            System.out.println("\n🏆 VICTORY!");
-            System.out.println("Congratulations, you have defeated all your enemies.");
-            System.out.println("Remaining HP: " + player.getHp() + "/" + player.getMaxHp());
-            System.out.println("Total Rounds: " + roundCount);
-        } else {
-            System.out.println("\n💀 DEFEATED. Don't give up, try again!");
             long remaining = enemies.stream().filter(Combatant::isAlive).count();
-            System.out.println("Enemies Remaining: " + remaining);
-            System.out.println("Total Rounds Survived: " + roundCount);
+            cli.showVictoryScreen(player.getHp(), roundCount); // use CLI screen
+        } else {
+            long remaining = enemies.stream().filter(Combatant::isAlive).count();
+            cli.showDefeatScreen((int) remaining, roundCount); // use CLI screen
         }
     }
 }

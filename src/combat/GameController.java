@@ -2,11 +2,13 @@
 package combat;
 
 import combatants.*;
+import items.*;
 import ui.CLI;
+
 import java.util.*;
 
 public class GameController {
-    private CLI cli;
+    private final CLI cli;
 
     public GameController(CLI cli) {
         this.cli = cli;
@@ -24,8 +26,8 @@ public class GameController {
             // Keep these so the loop re-runs correctly
             boolean playAgainSame = true;
             while (playAgainSame) {
-                Combatant player = playerChoice == 1 ? new Warrior() : new Wizard();
-                // TODO (M4): give player their item loadout based on items[] here
+                Player player = playerChoice == 1 ? new Warrior() : new Wizard();
+                assignItems(player, items);
 
                 List<Combatant> enemies = buildEnemies(difficulty);
                 List<Combatant> backup  = buildBackup(difficulty);
@@ -44,6 +46,24 @@ public class GameController {
         }
         cli.close();
     }
+
+    private void assignItems(Player player, int[] items)
+    {
+        for (int choice : items)
+        {
+            player.addItem(createItem(choice));
+        }
+    }
+
+    private Item createItem(int choice) {
+        return switch (choice) {
+            case 1 -> new Potion();
+            case 2 -> new PowerStone();
+            case 3 -> new SmokeBomb();
+            default -> throw new IllegalArgumentException("Invalid item choice: " + choice);
+        };
+    }
+
 
     private List<Combatant> buildEnemies(int difficulty) {
         List<Combatant> enemies = new ArrayList<>();

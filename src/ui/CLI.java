@@ -49,46 +49,26 @@ public class CLI {
      * Presents the action menu and returns the chosen Action.
      * Called by Player.TakeTurn() via context.getPlayerAction()
      */
-    // public Action getPlayerAction(Player player) {
-    //     showActionMenu(player);
-
-    //     while (true) {
-    //         int choice = getIntInput("  Enter choice (1-4): ", 1, 4);
-    //         switch (choice) {
-    //             case 1 -> { return new BasicAttack(); }
-    //             case 2 -> { return new Defend(); }
-    //             case 3 -> {
-    //                 if (!player.hasItems()) {
-    //                     System.out.println("  [!] No items remaining. Choose another action.");
-    //                 } else {
-    //                     return player.useItemAction(this);
-    //                 }
-    //             }
-    //             case 4 -> {
-    //                 if (!player.getSkill().isAvailable()) {
-    //                     System.out.println("  [!] Special Skill is on cooldown. Choose another action.");
-    //                 } else {
-    //                     return new SpecialSkillAction();
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
+ 
     public Action getPlayerAction(Player player) {
         showActionMenu(player);
         while (true) {
-            int choice = getIntInput("  Enter choice (1-4): ", 1, 4);
+            // int choice = getIntInput("  Enter choice (1-4): ", 1, 4);
+            int choice = getIntInput("  Enter choice (1-3): ", 1, 3);
             switch (choice) {
                 case 1 -> { return new BasicAttack(); }
                 case 2 -> { return new Defend(); }
-                case 3 -> {
-                    if (!player.hasItems()) {
-                        System.out.println("  [!] No items remaining. Choose another action.");
-                    } else {
-                        return new actions.UseItemAction(); // M4 creates this
-                    }
-                }
+                // case 3 -> {
+                //     if (!player.hasItems()) {
+                //         System.out.println("  [!] No items remaining. Choose another action.");
+                //     } else {
+                //         return new actions.UseItemAction(); // M4 creates this
+                //     }
+                // }
                 case 4 -> {
+                    System.out.println("  [!] Items not implemented yet. Choose another action.");
+                }
+                case 3 -> {
                     if (!player.getSkill().isAvailable()) {
                         System.out.println("  [!] Special Skill on cooldown. Choose another action.");
                     } else {

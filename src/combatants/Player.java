@@ -17,7 +17,7 @@ public abstract class Player extends Combatant{
         // Only tick cooldown AFTER the action, and only if skill wasn't just activated
         // skillCooldown.triggerCooldown() sets it to MAX; reduceCooldown would immediately decrement.
         // tickCooldown() in skillCooldown handles this guard:
-        skill.tickCooldown();
+        skill.reduceCooldown();
     }
     public SpecialSkill getSkill() { return skill; }
     // Add these fields and methods to Player.java

@@ -14,36 +14,34 @@ public class GameController {
 
     public void run() {
         cli.showTitleScreen();
-
         boolean playing = true;
+
         while (playing) {
-
-            // 1. Pick character
             int playerChoice = cli.showPlayerSelection();
-            Combatant player = playerChoice == 1 ? new Warrior() : new Wizard();
-
-            // 2. Pick items (add when Member 4 is done)
-
-            // 3. Pick difficulty
+            int[] items = cli.showItemSelection();      // M4 will use these values
             int difficulty = cli.showDifficultySelection();
-            List<Combatant> enemies = buildEnemies(difficulty);
-            List<Combatant> backup = buildBackup(difficulty);
 
-            // 4. Run battle
-            BattleEngine engine = new BattleEngine(
-                player, enemies, backup, new SpeedBasedTurnOrder(), cli
-            );
-            engine.runBattle();
+            // Keep these so the loop re-runs correctly
+            boolean playAgainSame = true;
+            while (playAgainSame) {
+                Combatant player = playerChoice == 1 ? new Warrior() : new Wizard();
+                // TODO (M4): give player their item loadout based on items[] here
 
-            // 5. Post game menu
-            int choice = cli.showPostGameMenu();
-            switch (choice) {
-                case 1 -> { /* replay — loop continues with same difficulty, add later */ }
-                case 2 -> { /* new game — loop continues back to title */ }
-                case 3 -> playing = false;
+                List<Combatant> enemies = buildEnemies(difficulty);
+                List<Combatant> backup  = buildBackup(difficulty);
+
+                BattleEngine engine = new BattleEngine(player, enemies, backup,
+                        new SpeedBasedTurnOrder(), cli);
+                engine.runBattle();
+
+                int choice = cli.showPostGameMenu();
+                switch (choice) {
+                    case 1 -> { /* replay same — inner loop continues */ }
+                    case 2 -> { playAgainSame = false; /* breaks inner, outer re-runs setup */ }
+                    case 3 -> { playAgainSame = false; playing = false; }
+                }
             }
         }
-
         cli.close();
     }
 
@@ -75,7 +73,7 @@ public class GameController {
                 backup.add(new Wolf("Wolf B"));
             }
             case 3 -> {
-                backup.add(new Goblin("Goblin C"));
+                backup.add(new Goblin("Goblin A"));
                 backup.add(new Wolf("Wolf A"));
                 backup.add(new Wolf("Wolf B"));
             }

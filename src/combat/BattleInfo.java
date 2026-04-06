@@ -3,21 +3,26 @@ package combat;
 import actions.Action;
 import combatants.*;
 import effects.StatusEffect;
+<<<<<<< HEAD
+=======
+import ui.CLI;
+
+>>>>>>> f7b4b4187540c0b7be8d594121c2f8d16e22cd2c
 import java.util.*;
 import ui.CLI;
 
 public class BattleInfo {
-    private Combatant player;
-    private List<Combatant> enemies;
-    private int currentRound;
-    private Map<Combatant, List<StatusEffect>> statusEffects;
-    private CLI cli;
+    private final Combatant player;
+    private final List<Combatant> enemies;
+    private final int currentRound;
+    private final Map<Combatant, List<StatusEffect>> statusEffects;
+    private final CLI cli;
 
-    public BattleInfo(Combatant player, List<Combatant> enemies, int currentRound, CLI cli) {
+    public BattleInfo(Combatant player, List<Combatant> enemies, int currentRound, CLI cli, Map<Combatant, List<StatusEffect>> statusEffects) {
         this.player = player;
         this.enemies = enemies;
         this.currentRound = currentRound;
-        this.statusEffects = new HashMap<>();
+        this.statusEffects = statusEffects;
         this.cli = cli;
     }
 
@@ -45,15 +50,23 @@ public class BattleInfo {
     // Called once per combatant's turn end to tick their effects down
     public void tickEffectsFor(Combatant c) {
         List<StatusEffect> effects = getEffects(c);
+        if (effects == null) return;
+
         Iterator<StatusEffect> it = effects.iterator();
         while (it.hasNext()) {
             StatusEffect e = it.next();
             if (e.getDuration() == -1) continue; // permanent
+
             e.tick();
             if (e.isExpired()) {
                 e.onExpire(c);
                 it.remove();
             }
+        }
+
+        if (effects.isEmpty())
+        {
+            statusEffects.remove(c);
         }
     }
 
@@ -77,7 +90,10 @@ public class BattleInfo {
         List<StatusEffect> effects = getEffects(c);
         if (effects.isEmpty()) return "";
         StringBuilder sb = new StringBuilder();
-        for (StatusEffect e : effects) sb.append("[").append(e.getName()).append("] ");
+        for (StatusEffect e : effects)
+        {
+            sb.append("[").append(e.getName()).append("] ");
+        }
         return sb.toString().trim();
     }
 }

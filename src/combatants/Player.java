@@ -1,44 +1,90 @@
 package combatants;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import actions.Action;
 import combat.BattleInfo;
 import items.Item;
-import ui.CLI;
-public abstract class Player extends Combatant{
-    protected SpecialSkill skill;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+public abstract class Player extends Combatant {
+    protected SpecialSkill skill;
+    private final List<Item> inventory = new ArrayList<>();
+    private final Map<String, Integer> usageTracker = new LinkedHashMap<>();
+
+    @Override
     public void TakeTurn(BattleInfo context) {
         if (!isAlive()) return;
+
         Action action = context.getPlayerAction(this);
         action.execute(this, context);
-        // Only tick cooldown AFTER the action, and only if skill wasn't just activated
-        // skillCooldown.triggerCooldown() sets it to MAX; reduceCooldown would immediately decrement.
-        // tickCooldown() in skillCooldown handles this guard:
-        skill.reduceCooldown();
-    }
-    public SpecialSkill getSkill() { return skill; }
-    // Add these fields and methods to Player.java
-    protected List<Item> items = new ArrayList<>();
 
-    public void addItem(Item item) { items.add(item); }
+        // Avoid decrementing cooldown on the same turn skill was normally used.
+        skill.tickCooldown();
+    }
+
+    public SpecialSkill getSkill() {
+        return skill;
+    }
+
+    public void addItem(Item item) {
+        inventory.add(item);
+        usageTracker.putIfAbsent(item.getName(), 0);
+    }
 
     public boolean hasItems() {
-        return items.stream().anyMatch(i -> !i.isUsed());
+        return !inventory.isEmpty();
+    }
+
+    public int getItemCount() {
+        return inventory.size();
+    }
+
+    public List<Item> getInventory() {
+        return inventory;
+    }
+
+    public void useItem(int index, BattleInfo context) {
+        if (index < 0 || index >= inventory.size()) {
+            System.out.println("Invalid item choice.");
+            return;
+        }
+
+        Item item = inventory.remove(index);
+        item.use(this, context);
+        usageTracker.put(item.getName(), usageTracker.getOrDefault(item.getName(), 0) + 1);
     }
 
     public String getItemsSummary() {
-        if (items.isEmpty()) return "None";
-        return items.stream()
-            .map(i -> i.getName() + (i.isUsed() ? " (used)" : ""))
-            .collect(java.util.stream.Collectors.joining(", "));
+        if (inventory.isEmpty()) return "None";
+
+        Map<String, Integer> counts = new LinkedHashMap<>();
+        for (Item item : inventory) {
+            counts.put(item.getName(), counts.getOrDefault(item.getName(), 0) + 1);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        for (Map.Entry<String, Integer> entry : counts.entrySet()) {
+            if (!first) sb.append(", ");
+            sb.append(entry.getKey()).append(" x").append(entry.getValue());
+            first = false;
+        }
+        return sb.toString();
     }
 
-    // M4 will call this from the Item action
-    public Item selectItem(CLI cli) {
-        return cli.selectItem(items.stream().filter(i -> !i.isUsed()).collect(Collectors.toList()));
-}
-}
+    public String getUsageSummary() {
+        if (usageTracker.isEmpty()) return "No items used";
 
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        for (Map.Entry<String, Integer> entry : usageTracker.entrySet()) {
+            if (!first) sb.append(", ");
+            sb.append(entry.getKey()).append(": ").append(entry.getValue());
+            first = false;
+        }
+        return sb.toString();
+    }
+}

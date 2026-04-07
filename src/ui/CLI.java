@@ -3,18 +3,8 @@ package ui;
 import actions.*;
 import combatants.*;
 import items.Item;
-
 import java.util.*;
 
-/**
- * CLI - Boundary class for all user-facing input and output.
- * Fleshed out by the UI member as agreed in BattleInfo comments.
- *
- * Key responsibilities handed to this class by teammates:
- *   - selectTarget()   called by BasicAttack, ShieldBash
- *   - getPlayerAction() called by Player.TakeTurn()
- *   - All display screens (loading, battle, victory, defeat)
- */
 public class CLI {
 
     private final Scanner scanner;
@@ -23,15 +13,6 @@ public class CLI {
         this.scanner = new Scanner(System.in);
     }
 
-    // =========================================================
-    // CALLED BY BattleInfo - these are the two placeholder methods
-    // your teammates left for the CLI member to implement
-    // =========================================================
-
-    /**
-     * Prompts the player to select a target from alive enemies.
-     * Called by BasicAttack.execute() and ShieldBash.execute() via context.selectTarget()
-     */
     public Combatant selectTarget(List<Combatant> aliveEnemies) {
         System.out.println();
         System.out.println("  Select a target:");
@@ -57,10 +38,6 @@ public class CLI {
         return new ItemAction(choice - 1);
     }
 
-    /**
-     * Presents the action menu and returns the chosen Action.
-     * Called by Player.TakeTurn() via context.getPlayerAction()
-     */
     public Action getPlayerAction(Player player) {
         showActionMenu(player);
 
@@ -91,10 +68,6 @@ public class CLI {
             }
         }
     }
-
-    // =========================================================
-    // LOADING / SETUP SCREENS
-    // =========================================================
 
     public void showTitleScreen() {
         printDivider('=', 60);
@@ -158,10 +131,6 @@ public class CLI {
         System.out.println();
         return getIntInput("  Enter choice (1-3): ", 1, 3);
     }
-
-    // =========================================================
-    // BATTLE DISPLAY
-    // =========================================================
 
     public void showBattleStatus(Combatant player, List<Combatant> enemies, int round) {
         System.out.println();
@@ -242,11 +211,6 @@ public class CLI {
         return available.get(choice - 1);
     }
 
-    // =========================================================
-    // GAME COMPLETION SCREENS
-    // =========================================================
-
-    /** Assignment brief exact wording - Victory */
     public void showVictoryScreen(int remainingHp, int totalRounds) {
         System.out.println();
         printDivider('*', 60);
@@ -262,7 +226,6 @@ public class CLI {
         printDivider('*', 60);
     }
 
-    /** Assignment brief exact wording - Defeat */
     public void showDefeatScreen(int enemiesRemaining, int totalRounds) {
         System.out.println();
         printDivider('x', 60);
@@ -287,10 +250,6 @@ public class CLI {
         System.out.println("  [3] Exit");
         return getIntInput("  Enter choice (1-3): ", 1, 3);
     }
-
-    // =========================================================
-    // INPUT HELPER
-    // =========================================================
 
     public int getIntInput(String prompt, int min, int max) {
         while (true) {

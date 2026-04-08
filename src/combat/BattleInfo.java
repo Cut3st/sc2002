@@ -3,13 +3,8 @@ package combat;
 import actions.Action;
 import combatants.*;
 import effects.StatusEffect;
-<<<<<<< HEAD
-=======
 import ui.CLI;
-
->>>>>>> f7b4b4187540c0b7be8d594121c2f8d16e22cd2c
 import java.util.*;
-import ui.CLI;
 
 public class BattleInfo {
     private final Combatant player;

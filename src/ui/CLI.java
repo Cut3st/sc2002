@@ -38,54 +38,36 @@ public class CLI {
         return new ItemAction(choice - 1);
     }
 
-    public Action getPlayerAction(Player player) {
-        showActionMenu(player);
+public Action getPlayerAction(Player player) {
+    showActionMenu(player);
 
-        while (true) {
-<<<<<<< HEAD
-            // int choice = getIntInput("  Enter choice (1-4): ", 1, 4);
-            int choice = getIntInput("  Enter choice (1-4): ", 1,43);
-            switch (choice) {
-                case 1 -> { return new BasicAttack(); }
-                case 2 -> { return new Defend(); }
-                // case 3 -> {
-                //     if (!player.hasItems()) {
-                //         System.out.println("  [!] No items remaining. Choose another action.");
-                //     } else {
-                //         return new actions.UseItemAction(); // M4 creates this
-                //     }
-                // }
-                case 3 -> {
-                    System.out.println("  [!] Items not implemented yet. Choose another action.");
-                }
-=======
-            int choice = getIntInput("  Enter choice (1-4): ", 1, 4);
+    while (true) {
+        int choice = getIntInput("  Enter choice (1-4): ", 1, 4);
 
-            switch (choice) {
-                case 1 -> {
-                    return new BasicAttack();
+        switch (choice) {
+            case 1 -> {
+                return new BasicAttack();
+            }
+            case 2 -> {
+                return new Defend();
+            }
+            case 3 -> {
+                if (!player.hasItems()) {
+                    System.out.println("  [!] No items remaining. Choose another action.");
+                } else {
+                    return chooseItemAction(player);
                 }
-                case 2 -> {
-                    return new Defend();
-                }
-                case 3 -> {
-                    if (!player.hasItems()) {
-                        System.out.println("  [!] No items remaining. Choose another action.");
-                    } else {
-                        return chooseItemAction(player);
-                    }
-                }
->>>>>>> 954a207c25086b72bb62a4625756fc54b22434d4
-                case 4 -> {
-                    if (!player.getSkill().isAvailable()) {
-                        System.out.println("  [!] Special Skill on cooldown. Choose another action.");
-                    } else {
-                        return new SpecialSkillAction();
-                    }
+            }
+            case 4 -> {
+                if (!player.getSkill().isAvailable()) {
+                    System.out.println("  [!] Special Skill on cooldown. Choose another action.");
+                } else {
+                    return new SpecialSkillAction();
                 }
             }
         }
     }
+}
 
     public void showTitleScreen() {
         printDivider('=', 60);

@@ -54,7 +54,7 @@ public class CLI {
         showActionMenu(player);
         while (true) {
             // int choice = getIntInput("  Enter choice (1-4): ", 1, 4);
-            int choice = getIntInput("  Enter choice (1-3): ", 1, 3);
+            int choice = getIntInput("  Enter choice (1-4): ", 1,43);
             switch (choice) {
                 case 1 -> { return new BasicAttack(); }
                 case 2 -> { return new Defend(); }
@@ -65,10 +65,10 @@ public class CLI {
                 //         return new actions.UseItemAction(); // M4 creates this
                 //     }
                 // }
-                case 4 -> {
+                case 3 -> {
                     System.out.println("  [!] Items not implemented yet. Choose another action.");
                 }
-                case 3 -> {
+                case 4 -> {
                     if (!player.getSkill().isAvailable()) {
                         System.out.println("  [!] Special Skill on cooldown. Choose another action.");
                     } else {

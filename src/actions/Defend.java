@@ -6,12 +6,12 @@ public class Defend implements Action {
 
     @Override
     public void execute(Combatant user, BattleInfo context) {
-        if (user == null || !user.isAlive()) return;// condition: if user is null or dead
+        if (user == null || !user.isAlive()) return;
 
-        context.applyStatusEffect(user, "DEFEND", 2);//realized in Battleinfo
+        // Use a class instead of "DEFEND", 2
+        context.applyStatusEffect(user, new effects.DefendEffect()); 
 
-        System.out.println(user.getName() +
-                " uses Defend. Defense +10 for current turn and next turn.");
+        System.out.println(user.getName() + " uses Defend. Defense +10 for current and next turn.");
     }
 
     @Override

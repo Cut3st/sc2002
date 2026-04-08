@@ -1,8 +1,10 @@
 package combatants;
+
 import combat.BattleInfo;
+
 public abstract class Combatant{
     protected int hp;
-    protected  int attack;
+    protected int attack;
     protected int defense;
     protected int speed;
     protected String name;
@@ -12,6 +14,13 @@ public abstract class Combatant{
 
     public void receiveDamage(int damage){
         hp=Math.max(0,hp-damage);//choose between 0 or current hp, include 0 as could go negative
+    }
+
+    public int heal(int amount)
+    {
+        int oldHP = hp;
+        hp = Math.min(maxHp, hp + amount);
+        return hp - oldHP;
     }
 
     public boolean isAlive(){

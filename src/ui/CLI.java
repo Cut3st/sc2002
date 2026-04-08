@@ -1,21 +1,10 @@
 package ui;
 
 import actions.*;
-import combat.BattleInfo;
 import combatants.*;
 import items.Item;
-
 import java.util.*;
 
-/**
- * CLI — Boundary class for all user-facing input and output.
- * Fleshed out by the UI member as agreed in BattleInfo comments.
- *
- * Key responsibilities handed to this class by teammates:
- *   - selectTarget()   called by BasicAttack, ShieldBash
- *   - getPlayerAction() called by Player.TakeTurn()
- *   - All display screens (loading, battle, victory, defeat)
- */
 public class CLI {
 
     private final Scanner scanner;
@@ -24,15 +13,6 @@ public class CLI {
         this.scanner = new Scanner(System.in);
     }
 
-    // =========================================================
-    // CALLED BY BattleInfo — these are the two placeholder methods
-    // your teammates left for the CLI member to implement
-    // =========================================================
-
-    /**
-     * Prompts the player to select a target from alive enemies.
-     * Called by BasicAttack.execute() and ShieldBash.execute() via context.selectTarget()
-     */
     public Combatant selectTarget(List<Combatant> aliveEnemies) {
         System.out.println();
         System.out.println("  Select a target:");
@@ -45,14 +25,24 @@ public class CLI {
         return aliveEnemies.get(choice - 1);
     }
 
-    /**
-     * Presents the action menu and returns the chosen Action.
-     * Called by Player.TakeTurn() via context.getPlayerAction()
-     */
- 
+    public Action chooseItemAction(Player player) {
+        System.out.println();
+        System.out.println("  Select an item:");
+
+        List<Item> inventory = player.getInventory();
+        for (int i = 0; i < inventory.size(); i++) {
+            System.out.printf("  [%d] %s%n", i + 1, inventory.get(i).getName());
+        }
+
+        int choice = getIntInput("  Enter choice: ", 1, inventory.size());
+        return new ItemAction(choice - 1);
+    }
+
     public Action getPlayerAction(Player player) {
         showActionMenu(player);
+
         while (true) {
+<<<<<<< HEAD
             // int choice = getIntInput("  Enter choice (1-4): ", 1, 4);
             int choice = getIntInput("  Enter choice (1-4): ", 1,43);
             switch (choice) {
@@ -68,6 +58,24 @@ public class CLI {
                 case 3 -> {
                     System.out.println("  [!] Items not implemented yet. Choose another action.");
                 }
+=======
+            int choice = getIntInput("  Enter choice (1-4): ", 1, 4);
+
+            switch (choice) {
+                case 1 -> {
+                    return new BasicAttack();
+                }
+                case 2 -> {
+                    return new Defend();
+                }
+                case 3 -> {
+                    if (!player.hasItems()) {
+                        System.out.println("  [!] No items remaining. Choose another action.");
+                    } else {
+                        return chooseItemAction(player);
+                    }
+                }
+>>>>>>> 954a207c25086b72bb62a4625756fc54b22434d4
                 case 4 -> {
                     if (!player.getSkill().isAvailable()) {
                         System.out.println("  [!] Special Skill on cooldown. Choose another action.");
@@ -78,9 +86,6 @@ public class CLI {
             }
         }
     }
-    // =========================================================
-    // LOADING / SETUP SCREENS
-    // =========================================================
 
     public void showTitleScreen() {
         printDivider('=', 60);
@@ -115,12 +120,12 @@ public class CLI {
     /** Returns int[2] of item choices: 1=Potion, 2=PowerStone, 3=SmokeBomb */
     public int[] showItemSelection() {
         printDivider('-', 60);
-        System.out.println("  SELECT YOUR ITEMS  (Choose 2 — duplicates allowed)");
+        System.out.println("  SELECT YOUR ITEMS  (Choose 2 - duplicates allowed)");
         printDivider('-', 60);
         System.out.println();
-        System.out.println("  [1] POTION       — Restore 100 HP");
-        System.out.println("  [2] POWER STONE  — Free use of Special Skill (no cooldown change)");
-        System.out.println("  [3] SMOKE BOMB   — Enemy attacks deal 0 dmg this turn + next");
+        System.out.println("  [1] POTION       - Restore 100 HP");
+        System.out.println("  [2] POWER STONE  - Free use of Special Skill (no cooldown change)");
+        System.out.println("  [3] SMOKE BOMB   - Enemy attacks deal 0 dmg this turn + next");
         System.out.println();
         int item1 = getIntInput("  Select item 1 (1-3): ", 1, 3);
         int item2 = getIntInput("  Select item 2 (1-3): ", 1, 3);
@@ -138,16 +143,12 @@ public class CLI {
         System.out.println("  Wolf    ->  HP: 40  |  ATK: 45  |  DEF:  5  |  SPD: 35");
         System.out.println();
         printDivider('-', 60);
-        System.out.println("  [1] EASY    — 3 Goblins");
-        System.out.println("  [2] MEDIUM  — 1 Goblin + 1 Wolf  |  Backup: 2 Wolves");
-        System.out.println("  [3] HARD    — 2 Goblins           |  Backup: 1 Goblin + 2 Wolves");
+        System.out.println("  [1] EASY    - 3 Goblins");
+        System.out.println("  [2] MEDIUM  - 1 Goblin + 1 Wolf  |  Backup: 2 Wolves");
+        System.out.println("  [3] HARD    - 2 Goblins           |  Backup: 1 Goblin + 2 Wolves");
         System.out.println();
         return getIntInput("  Enter choice (1-3): ", 1, 3);
     }
-
-    // =========================================================
-    // BATTLE DISPLAY
-    // =========================================================
 
     public void showBattleStatus(Combatant player, List<Combatant> enemies, int round) {
         System.out.println();
@@ -170,29 +171,30 @@ public class CLI {
         if (player instanceof Player p) {
             System.out.println();
             System.out.printf("  Items: %s%n", p.getItemsSummary());
-            System.out.printf("  Special Skill: %s — %s%n",
+            System.out.printf("  Special Skill: %s - %s%n",
                     p.getSkill().getClass().getSimpleName(),
                     p.getSkill().isAvailable() ? "READY" : "On Cooldown");
         }
 
         printDivider('=', 60);
     }
+
     public void showActionMenu(Player player) {
         System.out.println();
-        System.out.printf("  %s's Turn — Choose an action:%n", player.getName());
+        System.out.printf("  %s's Turn - Choose an action:%n", player.getName());
         printDivider('-', 60);
-        System.out.println("  [1] Basic Attack   — Attack a selected enemy");
-        System.out.println("  [2] Defend         — +10 DEF for this turn and next");
+        System.out.println("  [1] Basic Attack   - Attack a selected enemy");
+        System.out.println("  [2] Defend         - +10 DEF for this turn and next");
         if (player.hasItems()) {
-            System.out.printf("  [3] Use Item       — %s%n", player.getItemsSummary());
+            System.out.printf("  [3] Use Item       - %s%n", player.getItemsSummary());
         } else {
-            System.out.println("  [3] Use Item       — (No items remaining)");
+            System.out.println("  [3] Use Item       - (No items remaining)");
         }
         if (player.getSkill().isAvailable()) {
-            System.out.printf("  [4] Special Skill  — %s (READY)%n",
+            System.out.printf("  [4] Special Skill  - %s (READY)%n",
                     player.getSkill().getClass().getSimpleName());
         } else {
-            System.out.printf("  [4] Special Skill  — %s (On Cooldown)%n",
+            System.out.printf("  [4] Special Skill  - %s (On Cooldown)%n",
                     player.getSkill().getClass().getSimpleName());
         }
         printDivider('-', 60);
@@ -227,11 +229,6 @@ public class CLI {
         return available.get(choice - 1);
     }
 
-    // =========================================================
-    // GAME COMPLETION SCREENS
-    // =========================================================
-
-    /** Assignment brief exact wording — Victory */
     public void showVictoryScreen(int remainingHp, int totalRounds) {
         System.out.println();
         printDivider('*', 60);
@@ -247,7 +244,6 @@ public class CLI {
         printDivider('*', 60);
     }
 
-    /** Assignment brief exact wording — Defeat */
     public void showDefeatScreen(int enemiesRemaining, int totalRounds) {
         System.out.println();
         printDivider('x', 60);
@@ -273,10 +269,6 @@ public class CLI {
         return getIntInput("  Enter choice (1-3): ", 1, 3);
     }
 
-    // =========================================================
-    // INPUT HELPER
-    // =========================================================
-
     public int getIntInput(String prompt, int min, int max) {
         while (true) {
             System.out.print(prompt);
@@ -300,5 +292,7 @@ public class CLI {
         System.out.println(" ".repeat(padding) + text);
     }
 
-    public void close() { scanner.close(); }
+    public void close() {
+        scanner.close();
+    }
 }

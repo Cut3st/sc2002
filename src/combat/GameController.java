@@ -60,6 +60,7 @@ public class GameController {
             case 1 -> new Potion();
             case 2 -> new PowerStone();
             case 3 -> new SmokeBomb();
+            case 4 -> new Antidote();
             default -> throw new IllegalArgumentException("Invalid item choice: " + choice);
         };
     }
@@ -75,11 +76,12 @@ public class GameController {
             }
             case 2 -> {
                 enemies.add(new Goblin("Goblin A"));
-                enemies.add(new Wolf("Wolf A"));
+                enemies.add(new Shaman("Shaman A"));
             }
             case 3 -> {
                 enemies.add(new Goblin("Goblin A"));
-                enemies.add(new Goblin("Goblin B"));
+                enemies.add(new Wolf("Wolf A"));
+                enemies.add(new Shaman("Shaman A"));
             }
         }
         return enemies;
@@ -90,11 +92,10 @@ public class GameController {
         switch (difficulty) {
             case 2 -> {
                 backup.add(new Wolf("Wolf A"));
-                backup.add(new Wolf("Wolf B"));
+                backup.add(new Shaman("Shaman B"));
             }
             case 3 -> {
                 backup.add(new Goblin("Goblin A"));
-                backup.add(new Wolf("Wolf A"));
                 backup.add(new Wolf("Wolf B"));
             }
         }

@@ -17,6 +17,7 @@ public abstract class StatusEffect {
     public int getDuration() { return duration; }
     public boolean isExpired() { return duration <= 0; }
     public void tick() { if (duration > 0) duration--; }
+    public void onTick(Combatant target) {}
 
     // Subclasses define what happens when applied and when removed
     public abstract void onApply(Combatant target);

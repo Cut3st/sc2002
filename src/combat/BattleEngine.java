@@ -16,6 +16,9 @@ public class BattleEngine {
 
     private boolean backupSpawned = false;
     private int roundCount = 0;
+    private int playerDamageDealt = 0;
+    private int playerDamageTaken = 0;
+    private int enemiesDefeated = 0;
 
     // persist effects across rounds
     private final Map<Combatant, List<StatusEffect>> statusEffects = new HashMap<>();
@@ -31,11 +34,6 @@ public class BattleEngine {
     public void runBattle() {
         while (!isBattleOver()) {
             roundCount++;
-            cli.showBattleStatus(player, enemies, roundCount); // move display to top of round
-
-            List<Combatant> allCombatants = getAllCombatants();
-            List<Combatant> turnOrder = turnOrderStrategy.getTurnOrder(allCombatants);
-
             BattleInfo context = new BattleInfo(
                 player,
                 enemies.stream().filter(Combatant::isAlive).collect(Collectors.toList()),
@@ -43,13 +41,24 @@ public class BattleEngine {
                 cli,
                 statusEffects
             );
+            cli.showBattleStatus(player, enemies, roundCount, context);
+
+            List<Combatant> allCombatants = getAllCombatants();
+            List<Combatant> turnOrder = turnOrderStrategy.getTurnOrder(allCombatants);
 
             for (Combatant c : turnOrder) {
                 if (!c.isAlive()) continue;
                 if (isBattleOver()) break;
 
+                int playerHpBefore = player.getHp();
+                Map<Combatant, Integer> enemyHpBefore = snapshotEnemyHp();
+                Map<Combatant, Boolean> enemyAliveBefore = snapshotEnemyAlive();
+
                 c.TakeTurn(context);
                 context.tickEffectsFor(c); // tick only this combatant's effects after their turn
+
+                playerDamageTaken += Math.max(0, playerHpBefore - player.getHp());
+                updateEnemyStats(enemyHpBefore, enemyAliveBefore);
             }
 
             checkBackupSpawn();
@@ -101,11 +110,42 @@ public class BattleEngine {
     }
 
     private void displayResult() {
+        String itemUsage = player instanceof combatants.Player p ? p.getUsageSummary() : "No items used";
         if (player.isAlive()) {
-            cli.showVictoryScreen(player.getHp(), roundCount); // use CLI screen
+            cli.showVictoryScreen(player.getHp(), roundCount, playerDamageDealt, playerDamageTaken,
+                    enemiesDefeated, itemUsage); // use CLI screen
         } else {
             long remaining = enemies.stream().filter(Combatant::isAlive).count();
-            cli.showDefeatScreen((int) remaining, roundCount); // use CLI screen
+            cli.showDefeatScreen((int) remaining, roundCount, playerDamageDealt, playerDamageTaken,
+                    enemiesDefeated, itemUsage); // use CLI screen
+        }
+    }
+
+    private Map<Combatant, Integer> snapshotEnemyHp() {
+        Map<Combatant, Integer> hpSnapshot = new HashMap<>();
+        for (Combatant enemy : enemies) {
+            hpSnapshot.put(enemy, enemy.getHp());
+        }
+        return hpSnapshot;
+    }
+
+    private Map<Combatant, Boolean> snapshotEnemyAlive() {
+        Map<Combatant, Boolean> aliveSnapshot = new HashMap<>();
+        for (Combatant enemy : enemies) {
+            aliveSnapshot.put(enemy, enemy.isAlive());
+        }
+        return aliveSnapshot;
+    }
+
+    private void updateEnemyStats(Map<Combatant, Integer> enemyHpBefore, Map<Combatant, Boolean> enemyAliveBefore) {
+        for (Combatant enemy : enemies) {
+            int hpBefore = enemyHpBefore.getOrDefault(enemy, enemy.getHp());
+            playerDamageDealt += Math.max(0, hpBefore - enemy.getHp());
+
+            boolean wasAlive = enemyAliveBefore.getOrDefault(enemy, false);
+            if (wasAlive && !enemy.isAlive()) {
+                enemiesDefeated++;
+            }
         }
     }
 }
